@@ -1,16 +1,26 @@
 import * as jsonfile from "jsonfile";
 
 class Contact {
+  constructor(id: number, name: string) {
+    this.id = id,
+      this.name = name
+  }
   id?: number = undefined;
   name: string = "";
 }
+
 
 class ContactsCollection {
   data: Contact[] = [];
   load() {
     // usar la version Async (readFile)
-    const json = jsonfile.readFileSync(__dirname + "/contacts.json");
-    this.data = json;
+
+    const promesa = jsonfile.readFile(__dirname + "/contacts.json")
+      promesa.then(res => {
+        this.data = res
+      })
+      promesa.catch(error => console.error(error));
+      return promesa
   }
   getAll() {
     return this.data;
@@ -20,7 +30,11 @@ class ContactsCollection {
   }
   save() {
     // usar la version Async (writeFIle)
-    jsonfile.writeFileSync(__dirname + "/contacts.json", this.data);
+    jsonfile.writeFile(__dirname + "/contacts.json", this.data)
+      .then(res => {
+        console.log("Escritura Exitosa")
+      })
+      .catch(error => console.error("Fallo: ", error))
   }
   getOneById(id) {
     const encontrado = this.data.find((contacto) => {
@@ -32,4 +46,5 @@ class ContactsCollection {
     return encontrado;
   }
 }
+
 export { ContactsCollection, Contact };

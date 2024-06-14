@@ -1,4 +1,5 @@
 import { ContactsCollection, Contact } from "./models";
+const parseaParams = require('minimist')
 
 export class ContactsControllerOptions {
   action: "get" | "save";
@@ -7,9 +8,11 @@ export class ContactsControllerOptions {
 
 class ContactsController {
   contacts: ContactsCollection;
+  promesa: Promise<any>
   constructor() {
     this.contacts = new ContactsCollection();
-    this.contacts.load();
+    const promesa = this.contacts.load();
+    this.promesa = promesa
   }
   processOptions(options: ContactsControllerOptions) {
     var resultado;
@@ -23,5 +26,15 @@ class ContactsController {
     }
     return resultado;
   }
+}
+
+function main() {
+  const controller = new ContactsController ();
+
+  controller.promesa.then( () =>{
+    const params = parseaParams(process.argv.slice(2));
+    const result = controller.processOptions(params);
+    console.log(result)
+  })
 }
 export { ContactsController };
